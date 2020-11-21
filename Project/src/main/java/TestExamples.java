@@ -12,16 +12,6 @@ import org.junit.Test;
  * @author zhangyue
  */
 public class TestExamples {
-    @Test
-    public void TestDataLog(){
-        String[] args = {"-m", "src/main/test/Data/2-DataLog/Target/", "src/main/test/Data/2-DataLog/data/change_info.txt"};
-        Set<String> result =  SelectTest.function(args);
-        assertResult("src/main/test/Data/2-DataLog/data/selection-method.txt", result);
-        args[0] = "-c";
-        result =  SelectTest.function(args);
-        assertResult("src/main/test/Data/2-DataLog/data/selection-class.txt", result);
-    }
-
 
     @Test
     public void TestCMD(){
@@ -31,6 +21,26 @@ public class TestExamples {
         args[0] = "-c";
         result =  SelectTest.function(args);
         assertResult("src/main/test/Data/0-CMD/data/selection-class.txt", result);
+    }
+
+    @Test
+    public void TestALU(){
+        String[] args = {"-m", "src/main/test/Data/1-ALU/Target/", "src/main/test/Data/1-ALU/data/change_info.txt"};
+        Set<String> result = SelectTest.function(args);
+        assertResult("src/main/test/Data/1-ALU/data/selection-method.txt", result);
+        args[0] = "-c";
+        result =  SelectTest.function(args);
+        assertResult("src/main/test/Data/1-ALU/data/selection-class.txt", result);
+    }
+
+    @Test
+    public void TestDataLog(){
+        String[] args = {"-m", "src/main/test/Data/2-DataLog/Target/", "src/main/test/Data/2-DataLog/data/change_info.txt"};
+        Set<String> result =  SelectTest.function(args);
+        assertResult("src/main/test/Data/2-DataLog/data/selection-method.txt", result);
+        args[0] = "-c";
+        result =  SelectTest.function(args);
+        assertResult("src/main/test/Data/2-DataLog/data/selection-class.txt", result);
     }
 
     @Test
@@ -44,20 +54,6 @@ public class TestExamples {
     }
 
     @Test
-    public void TestALU(){
-        String[] args = {"-m", "src/main/test/Data/1-ALU/Target/", "src/main/test/Data/1-ALU/data/change_info.txt"};
-        Set<String> result = SelectTest.function(args);
-        assertResult("src/main/test/Data/1-ALU/data/selection-method.txt", result);
-        args[0] = "-c";
-        result =  SelectTest.function(args);
-        assertResult("src/main/test/Data/1-ALU/data/selection-class.txt", result);
-    }
-
-
-
-
-
-    @Test
     public void TestNextDay(){
         String[] args = new String[]{"-m", "src/main/test/Data/4-NextDay/Target/", "src/main/test/Data/4-NextDay/data/change_info.txt"};
         Set<String> result =  SelectTest.function(args);
@@ -68,7 +64,7 @@ public class TestExamples {
     }
 
     @Test
-    public void TestNextMoreTriangle(){
+    public void TestMoreTriangle(){
         String[] args = new String[]{"-m", "src/main/test/Data/5-MoreTriangle/Target/", "src/main/test/Data/5-MoreTriangle/data/change_info.txt"};
         Set<String> result =  SelectTest.function(args);
         assertResult("src/main/test/Data/5-MoreTriangle/data/selection-method.txt", result);

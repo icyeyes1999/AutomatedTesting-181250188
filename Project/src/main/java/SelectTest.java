@@ -80,14 +80,14 @@ public class SelectTest {
                 if(str==null){
                     break;
                 }else {
-                    change_methods.add(new String(str));
+                    change_methods.add(str);
                 }
             }
 
             //通过judge来判断之后的操作
             /**-----------------------------------------------------
+             * 对方法级的分析
              * -----------------------------------------------------*/
-            //方法级的分析
             if(judge.equals("-m")){
 
                 //构建树状数据结构
@@ -142,7 +142,7 @@ public class SelectTest {
                             new File(class_paths.get(i)));
                 }
 
-                //开始构建图结构
+                //开始构建图结构 graph
                 //生成类层次关系对象
                 ClassHierarchy cha_1=ClassHierarchyFactory.makeWithRoot(scope);
                 //进入点
@@ -186,7 +186,7 @@ public class SelectTest {
                     }
                 }
 
-                //构建图完毕
+                //构建图(graph)完毕
                 Map<String,Set<String>> dot=new HashMap<>();
                 //生成dot 0表示方法级别 1表示类级
                 generateDot(graph,dot,0);
@@ -221,8 +221,8 @@ public class SelectTest {
             }
 
             /**-----------------------------------------------------
+             * 对类的解析
              * -----------------------------------------------------*/
-            //对类的解析
             else if(judge.equals("-c")){
                 //构建树状数据结构
                 Map<Node, HashSet<Node>> graph=new HashMap<>();
@@ -470,7 +470,8 @@ public class SelectTest {
             }
         }
 
-        //生成Dot文件 并输出
+        /**
+         * 生成Dot文件 并输出
         try{
             BufferedWriter bufferedWriter;
             if(judge==0){
@@ -489,6 +490,8 @@ public class SelectTest {
         }catch (Exception e){
             e.printStackTrace();
         }
+         */
+
     }
 
     /**
@@ -496,10 +499,12 @@ public class SelectTest {
      *  广度优先算法
      */
     private static void findRelations(String change,Map<Node,HashSet<Node>> graph,Set<Node> test_class,Set<String> influenced,String flag){
+        //已访问点记录
         Set<Node> visited =new HashSet<>();
         //用队列的结构记录
         Queue<Node> queue=new LinkedList<>();
 
+        //遍历graph 逐层开始
         for(Node key:graph.keySet()){
             if(flag.equals("-m")){
                 if(key.getSignature().equals(change)){
@@ -513,6 +518,7 @@ public class SelectTest {
         }
         while(!queue.isEmpty()){
             for(int i=0;i<queue.size();i++){
+                //从队列中取出一个元素
                 Node node=queue.poll();
                 if(visited.contains(node)){
                     continue;
@@ -529,16 +535,17 @@ public class SelectTest {
                         //n入队尾
                         queue.add(n);
                         //判断n节点是否是测试方法 还是生产方法
-                        if(flag.equals("-m")){
-                            if(test_class.contains(n)&&n.isTest()){
-                                influenced.add(n.getAllName());
-                            }
-                        }else if(flag.equals("-c")){
+                        if(flag.equals("-c")){
                             for(Node node1:test_class){
                                 if(n.getClassInnerName().equals(node1.getClassInnerName())
                                         && node1.isTest()){
                                     influenced.add(node1.getAllName());
                                 }
+                            }
+                        }else if(flag.equals("-m")){
+                            //如果是测试类 并且是测试方法
+                            if(test_class.contains(n)&&n.isTest()){
+                                influenced.add(n.getAllName());
                             }
                         }
                     }
