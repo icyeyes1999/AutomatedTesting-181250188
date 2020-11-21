@@ -574,4 +574,51 @@ public class SelectTest {
             }
         }
     }
+
+    /**
+     * 用深度优先来查找Relations
+     * @param i
+     * @param vis
+     * @param map
+     */
+    private static void dfs(int i,boolean[] vis,List<Integer>[] map) {
+        System.out.print(" " + i + "-->");
+        vis[i] = true;
+        // 遍历邻接点
+        for (int j=0; j<map[i].size(); j++) {
+            //System.out.println(map[i].get(j));
+            if (!vis[map[i].get(j)]) {
+                int temp=map[i].get(j);
+            }
+        }
+    }
+
+    /**
+     * 比较两int值 并返回
+     * @param a
+     * @param b
+     * @return
+     */
+    private static boolean compare(int a,int b) {
+        if(a==b) {
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * 比较两个节点node的全称（AllName）
+     * @param a
+     * @param b
+     * @return
+     */
+    private static boolean compare_node(Node a,Node b){
+        if(a.getAllName().equals(b.getAllName())){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
 }
