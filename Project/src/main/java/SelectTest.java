@@ -29,14 +29,20 @@ public class SelectTest {
         function(args);
     }
 
+    /**
+     * 将args作为参数抽出一个函数 方便后续在TestExamples中进行Junit测试
+     * @param args
+     * @return
+     */
     public static Set<String> function(String[] args) {
 
+        //初始化分析域对象
         AnalysisScope scope;
 //        Scanner input=new Scanner(System.in);
 //        String str=input.next();
 //        System.out.println(str);
 
-        //TODO args[0]解析 对目录文件进行遍历 解析文件入口
+        //args[0]解析 对目录文件进行遍历 解析文件入口
 
         String judge=args[0];
         String file_path=args[1];
@@ -72,8 +78,8 @@ public class SelectTest {
             }
 
             //读取change_info
-            BufferedReader bufferedReader=new BufferedReader(new
-                    InputStreamReader(new FileInputStream(change_path)));
+            BufferedReader bufferedReader=new BufferedReader(
+                    new InputStreamReader(new FileInputStream(change_path)));
             String str="";
             while(true){
                 str=bufferedReader.readLine();
@@ -84,7 +90,8 @@ public class SelectTest {
                 }
             }
 
-            //通过judge来判断之后的操作
+            //通过judge来判断之后的操作 分成两种情况：对方法级的分析和对类级的分析
+            //通过构建分析域 构件图->再找出类与类之间的关系->通过change_info找出相应影响的class和method输出
             /**-----------------------------------------------------
              * 对方法级的分析
              * -----------------------------------------------------*/
@@ -188,10 +195,10 @@ public class SelectTest {
 
                 //构建图(graph)完毕
                 Map<String,Set<String>> dot=new HashMap<>();
-                //生成dot 0表示方法级别 1表示类级
+                //生成dot 0表示方法级别 1表示类级（生成dot的代码在jar运行时不需要 因此部分被注释掉了）
                 generateDot(graph,dot,0);
 
-                //受到影响的测试类
+                //受到影响的测试类选取
                 Set<String> influenced=new HashSet<>();
                 List<String> temp=new ArrayList<>();
                 int k=0;
@@ -206,13 +213,11 @@ public class SelectTest {
                     findRelations(change,graph,test_class,influenced,"-m");
                 }
 
-                //对influenced进行操作输出
+                //对influenced（受到影响的方法或者类）进行操作输出 此时是方法级
                 BufferedWriter bufferedWriter=null;
-                if(judge.equals("-c")){
-                    bufferedWriter =new BufferedWriter(new FileWriter("selection-class.txt"));
-                }else if(judge.equals("-m")){
-                    bufferedWriter =new BufferedWriter(new FileWriter("selection-method.txt"));
-                }
+
+                bufferedWriter =new BufferedWriter(new FileWriter("selection-method.txt"));
+
                 for(String s:influenced){
                     bufferedWriter.write(str+"\n");
                 }
@@ -322,7 +327,7 @@ public class SelectTest {
 
                 //构建图完毕
                 Map<String,Set<String>> dot=new HashMap<>();
-                //生成dot 0表示方法级别 1表示类级
+                //生成dot 0表示方法级别 1表示类级（生成dot的代码在jar运行时不需要 因此部分被注释掉了）
                 generateDot(graph,dot,1);
 
                 //受到影响的测试类
@@ -340,13 +345,11 @@ public class SelectTest {
                     findRelations(change,graph,test_class,influenced,"-c");
                 }
 
-                //对influenced进行操作输出
+                //对influenced进行操作输出 此时是-c 类级
                 BufferedWriter bufferedWriter=null;
-                if(judge.equals("-c")){
-                    bufferedWriter =new BufferedWriter(new FileWriter("selection-class.txt"));
-                }else if(judge.equals("-m")){
-                    bufferedWriter =new BufferedWriter(new FileWriter("selection-method.txt"));
-                }
+
+                bufferedWriter =new BufferedWriter(new FileWriter("selection-class.txt"));
+
                 for(String s:influenced){
                     bufferedWriter.write(str+"\n");
                 }
@@ -369,7 +372,7 @@ public class SelectTest {
 //        files.add(new File("F:\\大三上\\GPA课程\\自动化测试\\181250188_张越\\AutomatedTesting_181250188\\src\\main\\test\\Data\\0-CMD\\target\\test-classes\\net\\mooctest\\CMDTest3.class"));
 
         /**
-        //生成分析域
+         * 生成分析域模板代码
         LoadScope loadScope=new LoadScope();
         scope=loadScope.loadScope("scope.txt","exclusion.txt",
                 ClassLoader.getSystemClassLoader(),files);
@@ -425,6 +428,11 @@ public class SelectTest {
          */
     }
 
+    /**
+     * 添加文件 分别将test_classes（测试代码） 和 classes（生产代码）放到对应的数组里
+     * @param fileList
+     * @param targetFile
+     */
     private static void addFile(File[] fileList, List<String> targetFile){
         int i=0;
         while(i<fileList.length){
@@ -443,6 +451,12 @@ public class SelectTest {
         }
     }
 
+    /**
+     * 生成.Dot文件
+     * @param graph
+     * @param dot
+     * @param judge
+     */
     private static void generateDot(Map<Node,HashSet<Node>> graph,Map<String,Set<String>> dot,int judge){
         for(Node node:graph.keySet()){
             String s="";
@@ -495,10 +509,17 @@ public class SelectTest {
     }
 
     /**
-     *  根据变更信息找到关联测试用例加入结果
-     *  广度优先算法
+     * 根据变更信息找到关联测试用例加入结果
+     * 广度优先算法
+     * @param change
+     * @param graph
+     * @param test_class
+     * @param influenced
+     * @param flag
      */
     private static void findRelations(String change,Map<Node,HashSet<Node>> graph,Set<Node> test_class,Set<String> influenced,String flag){
+        //总体思路：通过root开始遍历 逐层遍历 每个点如果未被访问到则入队
+        //当前点遍历结束出队 再取出队首的一个节点继续访问 直到队列中没有节点
         //已访问点记录
         Set<Node> visited =new HashSet<>();
         //用队列的结构记录
